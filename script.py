@@ -16,5 +16,4 @@
 
 from lib.reddit import Reddit_API
 
-# reddit = praw.Reddit(CONSTANTS.REDDIT())
 reddit = Reddit_API()
