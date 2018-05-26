@@ -14,7 +14,6 @@
 #                                               Imports                                                #
 #------------------------------------------------------------------------------------------------------#
 
-from imdb import IMDb
-from lib.reddit import Reddit_API
+from lib.corpus import Corpus
 
-reddit = Reddit_API()
+corpus = Corpus()
