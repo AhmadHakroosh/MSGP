@@ -14,6 +14,16 @@
 #                                               Imports                                                #
 #------------------------------------------------------------------------------------------------------#
 
+from imdb import IMDb
 from lib.reddit import Reddit_API
 
 reddit = Reddit_API()
+
+# create an instance of the IMDb class
+IMDB = IMDb()
+
+# get a movie and print its director(s)
+the_matrix = IMDB.get_movie('0133093')
+
+# Keanu_Reeves = ia.get_person('0000206')
+actress = IMDB.get_person('0287825')

@@ -1,5 +1,5 @@
 import praw
-from constants import __CONSTANTS__
+from lib.constants import __CONSTANTS__
 
 CONSTANTS = __CONSTANTS__()
 
