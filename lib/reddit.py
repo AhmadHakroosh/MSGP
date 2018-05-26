@@ -17,18 +17,21 @@ class Reddit_API:
     def get_posts (self):
         posts = []
         for forum in REDDIT.forums:
-            for post in self.API.subreddit(forum).hot(limit = REDDIT.limit):
+            for post in self.API.subreddit(forum).new(params = REDDIT.last(REDDIT.limit)):
                 post_object = Post(post)
                 posts.append(post_object)
-                posts.extend(self.fetch_other_user_posts(post_object))
+                print(len(posts))
+                posts.extend(self.fetch_user_other_posts(post_object))
+                print(len(posts))
 
         return posts
 
-    def fetch_other_user_posts (self, post):
+    def fetch_user_other_posts (self, post):
         posts = []
         if post.author.name is not 'N/A':
-            for post in self.API.redditor(post.author.name).submissions.hot(limit = REDDIT.limit):
-                print(post)
+            for other_post in self.API.redditor(post.author.name).submissions.new(params = REDDIT.last(REDDIT.limit)):
+                if other_post.id != post.id:
+                    posts.append(Post(other_post, post.author))
 
         return posts
 
@@ -36,8 +39,14 @@ class Reddit_API:
 
 class Post:
 
-    def __init__ (self, post):
-        self.author = Author(post)
+    def __init__ (self, post, author = None):
+        self.id = post.id
+
+        if author is None:
+            self.author = Author(post)
+        else:
+            self.author = author
+
         self.text = self.get_text(post)
 
     def get_text (self, post):
