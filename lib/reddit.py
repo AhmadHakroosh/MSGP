@@ -16,12 +16,22 @@ class Reddit_API:
 
     def get_posts (self):
         posts = []
-
         for forum in REDDIT.forums:
             for post in self.API.subreddit(forum).hot(limit = REDDIT.limit):
-                posts.append(Post(post))
+                post_object = Post(post)
+                posts.append(post_object)
+                posts.extend(self.fetch_other_user_posts(post_object))
 
         return posts
+
+    def fetch_other_user_posts (self, post):
+        posts = []
+        if post.author.name is not 'N/A':
+            for post in self.API.redditor(post.author.name).submissions.hot(limit = REDDIT.limit):
+                print(post)
+
+        return posts
+
 
 
 class Post:
@@ -49,9 +59,9 @@ class Author:
 
     def get_gender (self, post):
         if post.author_flair_text is not None:
-            if any(gender in post.author_flair_text for gender in APP.GENDERS['m']):
+            if any(gender in post.author_flair_text for gender in REDDIT.genders['m']):
                 return 'm'
-            elif any(gender in post.author_flair_text for gender in APP.GENDERS['f']):
+            elif any(gender in post.author_flair_text for gender in REDDIT.genders['f']):
                 return 'f'
             else:
                 return '?'

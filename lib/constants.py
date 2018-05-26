@@ -9,14 +9,13 @@ class REDDIT:
         'AskWomen'
     ]
     limit = 100000
-
-GENDERS = {
-    'm': [
-        'Male',
-        '♂'
-    ],
-    'f': [
-        'Female',
-        '♀'
-    ]
-}
+    genders = {
+        'm': [
+            'Male',
+            '♂'
+        ],
+        'f': [
+            'Female',
+            '♀'
+        ]
+    }
