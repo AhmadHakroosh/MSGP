@@ -17,5 +17,4 @@
 from imdb import IMDb
 from lib.reddit import Reddit_API
 
-# reddit = Reddit_API()
-
+reddit = Reddit_API()
