@@ -1,36 +1,50 @@
 import time
 
-NOW = time.time()
+NOW = int(time.time())
 DAY = 60 * 60 * 24
 WEEK = 7 * DAY
 MONTH = 30 * DAY
 YEAR = 365 * DAY
 
-class REDDIT:
-    client_id = 'xZli_mehJLtd7w'
-    client_secret = 'zvMUu0_Wc09t97h4k2zLglP24sU'
-    username = 'AhmadHakroosh'
-    password = '1A$h50187'
-    user_agent = 'MSGP'
-    forums = [
-        'AskMen',
-        'AskWomen'
-    ]
-    limit = 'year'
-    genders = {
-        'm': [
-            'Male',
-            '♂'
-        ],
-        'f': [
-            'Female',
-            '♀'
+class Reddit:
+    def __init__ (self):
+        self.api = 'https://api.pushshift.io/reddit/submission/search?'
+        self.forums = [
+            'AskMen',
+            'AskWomen'
         ]
-    }
-    def last (self, t, x = 1):
-        return 'timestamp:{}..{}'.format(NOW, {
-            'day': NOW - (x * DAY),
-            'week': NOW - (x * (7 * DAY)),
-            'month': NOW - (x * (30 * DAY)),
-            'year': NOW - (x * (365 * DAY))
-        }[t])
+        self.limit = '100000'
+        self.period = 'year'
+        self.genders = {
+            'm': [
+                'Male',
+                '♂'
+            ],
+            'f': [
+                'Female',
+                '♀'
+            ]
+        }
+
+    def last (self, total = 'year', x = 1, periods = 'month'):
+        times = {
+            'day': DAY,
+            'week': WEEK,
+            'month': MONTH,
+            'year': YEAR
+        }
+        if times[total] * x <= times[periods]:
+            return [{
+                'before': str(NOW),
+                'after': str(NOW - (times[total] * x))
+            }]
+        else:
+            all_periods = []
+            for period in range(int((times[total] * x) / times[periods])):
+                all_periods.append({
+                    'before': str(NOW - (period * times[periods])),
+                    'after': str(NOW - ((period + 1) * times[periods]))
+                })
+            return all_periods
+
+REDDIT = Reddit()

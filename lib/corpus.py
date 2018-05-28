@@ -1,8 +1,7 @@
-from lib.reddit import Reddit_API
+from lib.reddit import Reddit
 import lib.constants as APP
 
-reddit = Reddit_API()
-REDDIT = APP.REDDIT()
+reddit = Reddit()
 
 class Corpus:
 
@@ -12,9 +11,11 @@ class Corpus:
     def get_data (self):
         print('loading data...')
         self.get_reddit_data()
+        self.get_movies_data()
 
     def get_reddit_data (self):
-        reddit.get_posts()
+        print('gathering reddit data')
+        print(len(reddit.get_posts()))
 
     def get_movies_data (self):
         print('gathering movies data')
