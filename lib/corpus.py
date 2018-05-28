@@ -9,13 +9,13 @@ class Corpus:
         self.get_data()
     
     def get_data (self):
-        print('loading data...')
+        print('Loading data')
         self.get_reddit_data()
         self.get_movies_data()
 
     def get_reddit_data (self):
-        print('gathering reddit data')
+        print('Gathering reddit data')
         print(len(reddit.get_posts()))
 
     def get_movies_data (self):
-        print('gathering movies data')
+        print('Gathering movies data')

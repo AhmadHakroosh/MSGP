@@ -5,46 +5,40 @@ REDDIT = APP.REDDIT
 
 class Reddit:
 
-    def search (self, params):
-        response = requests.get(REDDIT.api, json = params)
-        return response.json()['data']
+    def __init__ (self):
+        self.submissions = []
+        self.searched_authors = []
+
+    def search (self, subreddit = None, author = None):
+        for period in REDDIT.last('year', 1):
+            params = {
+                'before': period['before'],
+                'after': period['after'],
+                'size': REDDIT.limit,
+                'sort': 'desc'
+            }
+
+            if subreddit is not None:
+                params['subreddit'] = subreddit
+            if author is not None:
+                params['author'] = author
+            
+            response = requests.get(REDDIT.api, json = params)
+            for result in response.json()['data']:
+                post = Post(result)
+                self.submissions.append(post)
+                if post.author.name not in self.searched_authors:
+                    self.searched_authors.append(author)
+                    self.search(author = post.author.name)
+        
+        return self.submissions
 
     def get_posts (self):
-        posts = []
         for forum in REDDIT.forums:
             print('Collecting posts from {}'.format(forum))
-            for period in REDDIT.last('month', 3):
-                params = {
-                    'subreddit': forum,
-                    'before': period['before'],
-                    'after': period['after'],
-                    'size': REDDIT.limit,
-                    'sort': 'desc'
-                }
-                for post in self.search(params):
-                    post_object = Post(post)
-                    posts.append(post_object)
-                    posts.extend(self.fetch_user_other_posts(post_object))
+            self.search(subreddit = forum)
 
-        return posts
-
-    def fetch_user_other_posts (self, post):
-        posts = []
-        if post.author.name is not 'N/A':
-            for period in REDDIT.last('month', 3):
-                params = {
-                    'author': post.author.name,
-                    'before': period['before'],
-                    'after': period['after'],
-                    'size': REDDIT.limit,
-                    'sort': 'desc'
-                }
-                for other_post in self.search(params):
-                    if other_post['id'] != post.id:
-                        posts.append(Post(other_post, post.author))
-
-        return posts
-
+        return self.submissions
 
 
 class Post:
