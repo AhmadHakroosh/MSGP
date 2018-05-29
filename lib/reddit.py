@@ -13,7 +13,7 @@ class Reddit:
     # Search function that accepts a subreddit, an author name, both, or nothing
     def search (self, subreddit = None, author = None):
         # split into periods and iterate to find data and break limits of reddit
-        for period in REDDIT.last('year', 1):
+        for period in REDDIT.last('year', 10):
             # Initialize request parameters
             params = {
                 'before': period['before'],
