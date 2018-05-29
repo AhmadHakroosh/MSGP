@@ -1,11 +1,11 @@
 import time
-
+# Constants
 NOW = int(time.time())
 DAY = 60 * 60 * 24
 WEEK = 7 * DAY
 MONTH = 30 * DAY
 YEAR = 365 * DAY
-
+# Reddit configuration
 class Reddit:
     def __init__ (self):
         self.api = 'https://api.pushshift.io/reddit/submission/search?'
@@ -27,7 +27,7 @@ class Reddit:
                 '♀'
             ]
         }
-
+    # Accepts a period to find posts through, returns a list of period blocks
     def last (self, total = 'year', x = 1, periods = 'month'):
         times = {
             'day': DAY,

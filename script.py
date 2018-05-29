@@ -16,4 +16,5 @@
 
 from lib.corpus import Corpus
 
+# Instantiate our corpus
 corpus = Corpus()
