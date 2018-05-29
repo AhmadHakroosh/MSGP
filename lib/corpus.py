@@ -15,7 +15,7 @@ class Corpus:
 
     def get_reddit_data (self):
         print('Gathering reddit data')
-        print(len(reddit.get_posts()))
+        print(len(reddit.get_posts('./data/reddit')))
 
     def get_movies_data (self):
         print('Gathering movies data')

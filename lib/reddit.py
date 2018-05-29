@@ -1,6 +1,6 @@
 # Imports
 import lib.constants as APP
-import requests
+import os, requests
 # Retreive Reddit configuration - see constants.py
 REDDIT = APP.REDDIT
 
@@ -13,7 +13,7 @@ class Reddit:
     # Search function that accepts a subreddit, an author name, both, or nothing
     def search (self, subreddit = None, author = None):
         # split into periods and iterate to find data and break limits of reddit
-        for period in REDDIT.last('year', 10):
+        for period in REDDIT.last('day', 1):
             # Initialize request parameters
             params = {
                 'before': period['before'],
@@ -36,22 +36,37 @@ class Reddit:
                 # Add the post for the class container of posts
                 if post.id not in self.submissions:
                     self.submissions[post.id] = post
-                # Check if the post is for a user that we've already looked for his posts
-                if post.author.name not in self.searched_authors:
-                    # Search if not
-                    self.searched_authors.append(author)
-                    self.search(author = post.author.name)
+                    print(len(self.submissions))
+                    # Check if the post is for a user that we've already looked for his posts
+                    if post.author.name not in self.searched_authors:
+                        # Search if not
+                        self.searched_authors.append(author)
+                        self.search(author = post.author.name)
         
         return self.submissions
     # Get posts from reddit
-    def get_posts (self):
+    def get_posts (self, store = None):
         # Iterate over a list of forums - see constants.py
         for forum in REDDIT.forums:
             print('Collecting posts from {}'.format(forum))
             # Search for posts under the given forum
             self.search(subreddit = forum)
+        # Store data if asked to
+        if store is not None:
+            self.store_data(store, self.submissions)
         # Return found posts
         return self.submissions
+    # Data storage function
+    def store_data (self, location, data):
+        # Create output location path if not exists
+        os.makedirs(os.path.dirname(location), exist_ok = True)
+        # Open the file location and write
+        with open(location + '/submissions.tsv', 'w+') as store:
+            for submission in data.values():
+                entry = '{}\t{}\t{}'.format(submission['id'], submission['text'], submission['author'].gender)
+                store.write(entry)
+            # Close the store
+            store.close()
 
 # Post class
 class Post:
