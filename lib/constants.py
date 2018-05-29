@@ -17,10 +17,12 @@ class Reddit:
         self.period = 'year'
         self.genders = {
             'm': [
+                'male',
                 'Male',
                 '♂'
             ],
             'f': [
+                'female',
                 'Female',
                 '♀'
             ]
