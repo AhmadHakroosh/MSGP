@@ -28,7 +28,7 @@ class Reddit:
             ]
         }
     # Accepts a period to find posts through, returns a list of period blocks
-    def last (self, total = 'year', x = 1, periods = 'month'):
+    def last (self, total = 'year', x = 1, periods = 'week'):
         times = {
             'day': DAY,
             'week': WEEK,

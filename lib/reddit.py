@@ -8,7 +8,7 @@ REDDIT = APP.REDDIT
 class Reddit:
     # Class initializer
     def __init__ (self):
-        self.submissions = []
+        self.submissions = {}
         self.searched_authors = []
     # Search function that accepts a subreddit, an author name, both, or nothing
     def search (self, subreddit = None, author = None):
@@ -34,7 +34,8 @@ class Reddit:
                 # Instantiate a Post object
                 post = Post(result)
                 # Add the post for the class container of posts
-                self.submissions.append(post)
+                if post.id not in self.submissions:
+                    self.submissions[post.id] = post
                 # Check if the post is for a user that we've already looked for his posts
                 if post.author.name not in self.searched_authors:
                     # Search if not
