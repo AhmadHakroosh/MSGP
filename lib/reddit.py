@@ -19,13 +19,12 @@ class Reddit:
                 'before': period['before'],
                 'after': period['after'],
                 'size': REDDIT.limit,
-                'sort': 'desc',
-                'author_flair_text': 'Male'
+                'sort': 'desc'
             }
             # Set subreddit
             params['subreddit'] = subreddit
             # Execute the request
-            subreddit_results = requests.get(REDDIT.api, json = params)
+            subreddit_results = REDDIT.api.subreddit()
             # Iterate over found results
             for result in subreddit_results.json()['data']:
                 # Instantiate a Post object

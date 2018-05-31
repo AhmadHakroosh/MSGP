@@ -1,4 +1,4 @@
-import os, time
+import os, time, praw
 # Constants
 NOW = int(time.time())
 DAY = 60 * 60 * 24
@@ -8,7 +8,13 @@ YEAR = 365 * DAY
 # Reddit configuration
 class Reddit:
     def __init__ (self):
-        self.api = 'https://api.pushshift.io/reddit/submission/search?'
+        self.api = praw.Reddit(
+            client_id='xZli_mehJLtd7w',
+            client_secret='zvMUu0_Wc09t97h4k2zLglP24sU',
+            username='AhmadHakroosh',
+            password='1A$h50187',
+            user_agent='MSGP'
+        )
         self.forums = [
             'AskMen',
             'AskWomen'
