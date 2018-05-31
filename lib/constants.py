@@ -1,4 +1,4 @@
-import time
+import os, time
 # Constants
 NOW = int(time.time())
 DAY = 60 * 60 * 24
@@ -13,7 +13,7 @@ class Reddit:
             'AskMen',
             'AskWomen'
         ]
-        self.limit = '100000'
+        self.limit = '1'
         self.period = 'year'
         self.genders = {
             'm': [
@@ -27,6 +27,10 @@ class Reddit:
                 '♀'
             ]
         }
+    # Store location property
+    @property
+    def store (self): 
+        return os.getcwd() + '/lib/data/reddit/submissions.tsv'
     # Accepts a period to find posts through, returns a list of period blocks
     def last (self, total = 'year', x = 1, periods = 'week'):
         times = {

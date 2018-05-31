@@ -11,60 +11,61 @@ class Reddit:
         self.submissions = {}
         self.searched_authors = []
     # Search function that accepts a subreddit, an author name, both, or nothing
-    def search (self, subreddit = None, author = None):
+    def search (self, subreddit):
         # split into periods and iterate to find data and break limits of reddit
-        for period in REDDIT.last('day', 1):
+        for period in REDDIT.last('month', 1):
             # Initialize request parameters
             params = {
                 'before': period['before'],
                 'after': period['after'],
                 'size': REDDIT.limit,
-                'sort': 'desc'
+                'sort': 'desc',
+                'author_flair_text': 'Male'
             }
-            # Set only if subreddit is given
-            if subreddit is not None:
-                params['subreddit'] = subreddit
-            # Set only if author is given
-            if author is not None:
-                params['author'] = author
+            # Set subreddit
+            params['subreddit'] = subreddit
             # Execute the request
-            response = requests.get(REDDIT.api, json = params)
+            subreddit_results = requests.get(REDDIT.api, json = params)
             # Iterate over found results
-            for result in response.json()['data']:
+            for result in subreddit_results.json()['data']:
                 # Instantiate a Post object
                 post = Post(result)
                 # Add the post for the class container of posts
                 if post.id not in self.submissions:
                     self.submissions[post.id] = post
-                    print(len(self.submissions))
                     # Check if the post is for a user that we've already looked for his posts
                     if post.author.name not in self.searched_authors:
                         # Search if not
-                        self.searched_authors.append(author)
-                        self.search(author = post.author.name)
+                        params.pop('subreddit', None)
+                        params['author'] = post.author.name
+                        user_results = requests.get(REDDIT.api, json = params)
+                        for result in user_results.json()['data']:
+                            # Instantiate a Post object
+                            post = Post(result)
+                            if post.id not in self.submissions:
+                                self.submissions[post.id] = post
         
         return self.submissions
     # Get posts from reddit
-    def get_posts (self, store = None):
+    def get_posts (self, save = True):
         # Iterate over a list of forums - see constants.py
         for forum in REDDIT.forums:
             print('Collecting posts from {}'.format(forum))
             # Search for posts under the given forum
             self.search(subreddit = forum)
         # Store data if asked to
-        if store is not None:
-            self.store_data(store, self.submissions)
+        if save:
+            self.store_data(self.submissions)
         # Return found posts
         return self.submissions
     # Data storage function
-    def store_data (self, location, data):
+    def store_data (self, data):
         # Create output location path if not exists
-        os.makedirs(os.path.dirname(location), exist_ok = True)
+        os.makedirs(os.path.dirname(REDDIT.store), exist_ok = True)
         # Open the file location and write
-        with open(location + '/submissions.tsv', 'w+') as store:
+        with open(REDDIT.store, 'w+') as store:
             for submission in data.values():
-                entry = '{}\t{}\t{}'.format(submission['id'], submission['text'], submission['author'].gender)
-                store.write(entry)
+                store.write('{}\n'.format(str(submission)))
             # Close the store
             store.close()
 
@@ -86,6 +87,9 @@ class Post:
             return post['selftext']
         else:
             return post['title']
+
+    def __repr__ (self):
+        return '{}\t{}\t{}'.format(self.id, self.text.replace("\r","").replace("\n","") , self.author.gender)
 
 # Author class
 class Author:
