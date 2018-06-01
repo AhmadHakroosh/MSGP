@@ -1,10 +1,5 @@
-import os, time, praw, requests
-# Constants
-NOW = int(time.time())
-DAY = 60 * 60 * 24
-WEEK = 7 * DAY
-MONTH = 30 * DAY
-YEAR = 365 * DAY
+import os, requests
+
 # Reddit configuration
 class Reddit:
 
@@ -28,28 +23,6 @@ class Reddit:
         # Perform the AJAX and return found results
         response = requests.get(url, headers = self.headers, params = self.params(after)).json()['data']
         return [child['data'] for child in response['children']], response['after'], response['dist']
-
-    # Accepts a period to find posts through, returns a list of period blocks
-    def last (self, total = 'year', x = 1, periods = 'day'):
-        times = {
-            'day': DAY,
-            'week': WEEK,
-            'month': MONTH,
-            'year': YEAR
-        }
-        if times[total] * x <= times[periods]:
-            return [{
-                'before': str(NOW),
-                'after': str(NOW - (times[total] * x))
-            }]
-        else:
-            all_periods = []
-            for period in range(int((times[total] * x) / times[periods])):
-                all_periods.append({
-                    'before': str(NOW - (period * times[periods])),
-                    'after': str(NOW - ((period + 1) * times[periods]))
-                })
-            return all_periods
 
     # Params generator
     def params (self, after):
