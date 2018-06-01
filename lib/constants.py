@@ -11,7 +11,6 @@ class Reddit:
         ]
         self.total = 500
         self.limit = 100
-        self.period = 'year'
         self.genders = ['male', 'female']
 
     # API function
@@ -50,4 +49,13 @@ class Reddit:
     def store (self): 
         return os.getcwd() + '/lib/data/reddit/submissions.tsv'
 
+# IMDB configuration
+class Imdb:
+
+    # Class instance initializer
+    def __init__ (self):
+        self.url = 'https://www.imdb.com/find'
+
+
 REDDIT = Reddit()
+IMDB = Imdb()

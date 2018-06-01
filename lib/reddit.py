@@ -10,6 +10,7 @@ class Reddit:
     # Class initializer
     def __init__ (self):
         self.submissions = {}
+
     # Search function that accepts a subreddit, an author name, both, or nothing
     def search (self, subreddit = None, author = None, after = None, count = 100):
         # Find subreddit posts
@@ -39,6 +40,7 @@ class Reddit:
                         self.submissions[post.id] = post
         
         return self.submissions
+
     # Get posts from reddit
     def get_posts (self, save = True):
         # Iterate over a list of forums - see constants.py
@@ -55,6 +57,7 @@ class Reddit:
             self.store_data(self.submissions)
         # Return found posts
         return self.submissions
+
     # Data storage function
     def store_data (self, data):
         # Create output location path if not exists
@@ -79,6 +82,7 @@ class Post:
             self.author = author
 
         self.text = self.get_text(post)
+
     # Text fetch
     def get_text (self, post):
         if post['selftext'] != '' and len(post['selftext'].split(' ')) > 5:
@@ -86,6 +90,7 @@ class Post:
         else:
             return post['title']
 
+    # Class object representation
     def __repr__ (self):
         return '{}\t{}\t{}'.format(self.id, self.text.replace("\r","").replace("\n","") , self.author.gender)
 
@@ -99,6 +104,7 @@ class Author:
             self.name = 'N/A'
 
         self.gender = self.get_gender(post)
+        
     # Gender finder
     def get_gender (self, post):
         if post['author_flair_css_class'] is not None:
