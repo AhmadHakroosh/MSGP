@@ -1,4 +1,4 @@
-import os, time, praw
+import os, time, praw, requests
 # Constants
 NOW = int(time.time())
 DAY = 60 * 60 * 24
@@ -7,38 +7,30 @@ MONTH = 30 * DAY
 YEAR = 365 * DAY
 # Reddit configuration
 class Reddit:
+
+    # Class instace initializer
     def __init__ (self):
-        self.api = praw.Reddit(
-            client_id='xZli_mehJLtd7w',
-            client_secret='zvMUu0_Wc09t97h4k2zLglP24sU',
-            username='AhmadHakroosh',
-            password='1A$h50187',
-            user_agent='MSGP'
-        )
         self.forums = [
             'AskMen',
             'AskWomen'
         ]
-        self.limit = '1'
+        self.total = 500
+        self.limit = 100
         self.period = 'year'
-        self.genders = {
-            'm': [
-                'male',
-                'Male',
-                '♂'
-            ],
-            'f': [
-                'female',
-                'Female',
-                '♀'
-            ]
-        }
-    # Store location property
-    @property
-    def store (self): 
-        return os.getcwd() + '/lib/data/reddit/submissions.tsv'
+        self.genders = ['male', 'female']
+
+    # API function
+    def api (self, endpoint, keyword, after = None):
+        url = {
+            'subreddit': 'https://api.reddit.com/r/{}/new',
+            'user': 'https://api.reddit.com/user/{}/submitted'
+        }[endpoint].format(keyword)
+        # Perform the AJAX and return found results
+        response = requests.get(url, headers = self.headers, params = self.params(after)).json()['data']
+        return [child['data'] for child in response['children']], response['after'], response['dist']
+
     # Accepts a period to find posts through, returns a list of period blocks
-    def last (self, total = 'year', x = 1, periods = 'week'):
+    def last (self, total = 'year', x = 1, periods = 'day'):
         times = {
             'day': DAY,
             'week': WEEK,
@@ -58,5 +50,28 @@ class Reddit:
                     'after': str(NOW - ((period + 1) * times[periods]))
                 })
             return all_periods
+
+    # Params generator
+    def params (self, after):
+        obj = {
+            'limit': REDDIT.limit,
+            'author_flair_css_class': ','.join(self.genders)
+        }
+        if after is not None:
+            obj['after'] = after
+        return obj
+
+    # Headers generator
+    @property
+    def headers (self):
+        return {
+            'user-agent': 'MSGP',
+            'content-type': 'text'
+        }
+
+    # Store location property
+    @property
+    def store (self): 
+        return os.getcwd() + '/lib/data/reddit/submissions.tsv'
 
 REDDIT = Reddit()

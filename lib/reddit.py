@@ -3,46 +3,40 @@ import lib.constants as APP
 import os, requests
 # Retreive Reddit configuration - see constants.py
 REDDIT = APP.REDDIT
+authors = []
 
 # Reddit class definition
 class Reddit:
     # Class initializer
     def __init__ (self):
         self.submissions = {}
-        self.searched_authors = []
     # Search function that accepts a subreddit, an author name, both, or nothing
-    def search (self, subreddit):
-        # split into periods and iterate to find data and break limits of reddit
-        for period in REDDIT.last('month', 1):
-            # Initialize request parameters
-            params = {
-                'before': period['before'],
-                'after': period['after'],
-                'size': REDDIT.limit,
-                'sort': 'desc'
-            }
-            # Set subreddit
-            params['subreddit'] = subreddit
-            # Execute the request
-            subreddit_results = REDDIT.api.subreddit()
-            # Iterate over found results
-            for result in subreddit_results.json()['data']:
-                # Instantiate a Post object
-                post = Post(result)
-                # Add the post for the class container of posts
-                if post.id not in self.submissions:
-                    self.submissions[post.id] = post
-                    # Check if the post is for a user that we've already looked for his posts
-                    if post.author.name not in self.searched_authors:
-                        # Search if not
-                        params.pop('subreddit', None)
-                        params['author'] = post.author.name
-                        user_results = requests.get(REDDIT.api, json = params)
-                        for result in user_results.json()['data']:
-                            # Instantiate a Post object
-                            post = Post(result)
-                            if post.id not in self.submissions:
-                                self.submissions[post.id] = post
+    def search (self, subreddit = None, author = None, after = None, count = 100):
+        # Find subreddit posts
+        if subreddit is not None:
+            # Split into steps of 100 from 0 to pre-define number of posts and search
+            for step in range(0, REDDIT.total, REDDIT.limit):
+                # Execute the request
+                results, after, _ = REDDIT.api('subreddit', subreddit, after)
+                # Iterate over found results
+                for result in results:
+                    # Instantiate a Post object
+                    post = Post(result)
+                    # Add the post for the class container of posts
+                    if post.id not in self.submissions:
+                        self.submissions[post.id] = post
+        # Find user posts
+        if author is not None:
+            while count == 100:
+                # Execute the request
+                results, after, count = REDDIT.api('user', author.name, after)
+                # Iterate over found results
+                for result in results:
+                    # Instantiate a Post object
+                    post = Post(result, author)
+                    # Add the post for the class container of posts
+                    if post.id not in self.submissions:
+                        self.submissions[post.id] = post
         
         return self.submissions
     # Get posts from reddit
@@ -52,6 +46,9 @@ class Reddit:
             print('Collecting posts from {}'.format(forum))
             # Search for posts under the given forum
             self.search(subreddit = forum)
+        # Search each author posts
+        for author in authors:
+            self.search(author = author)
         # Store data if asked to
         if save:
             self.store_data(self.submissions)
@@ -76,13 +73,14 @@ class Post:
 
         if author is None:
             self.author = Author(post)
+            authors.append(self.author)
         else:
             self.author = author
 
         self.text = self.get_text(post)
     # Text fetch
     def get_text (self, post):
-        if not not post['selftext'] and len(post['selftext'].split(' ')) > 5:
+        if post['selftext'] != '' and len(post['selftext'].split(' ')) > 5:
             return post['selftext']
         else:
             return post['title']
@@ -102,11 +100,9 @@ class Author:
         self.gender = self.get_gender(post)
     # Gender finder
     def get_gender (self, post):
-        if post['author_flair_text'] is not None:
-            if any(gender in post['author_flair_text'] for gender in REDDIT.genders['m']):
-                return 'm'
-            elif any(gender in post['author_flair_text'] for gender in REDDIT.genders['f']):
-                return 'f'
+        if post['author_flair_css_class'] is not None:
+            if any(gender in post['author_flair_css_class'] for gender in REDDIT.genders):
+                return post['author_flair_css_class'][0]
             else:
                 return '?'
         else:
