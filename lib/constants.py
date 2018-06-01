@@ -21,8 +21,11 @@ class Reddit:
             'user': 'https://api.reddit.com/user/{}/submitted'
         }[endpoint].format(keyword)
         # Perform the AJAX and return found results
-        response = requests.get(url, headers = self.headers, params = self.params(after)).json()['data']
-        return [child['data'] for child in response['children']], response['after'], response['dist']
+        try:
+            response = requests.get(url, headers = self.headers, params = self.params(after)).json()['data']
+            return [child['data'] for child in response['children']], response['after'], response['dist']
+        except:
+            return [], '', 0
 
     # Params generator
     def params (self, after):

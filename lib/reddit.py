@@ -48,6 +48,7 @@ class Reddit:
             self.search(subreddit = forum)
         # Search each author posts
         for author in authors:
+            print('Collecting posts of {}'.format(author.name))
             self.search(author = author)
         # Store data if asked to
         if save:
