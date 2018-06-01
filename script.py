@@ -14,6 +14,7 @@
 #                                               Imports                                                #
 #------------------------------------------------------------------------------------------------------#
 
-from lib.reddit import Reddit_API
+from lib.corpus import Corpus
 
-reddit = Reddit_API()
+# Instantiate our corpus
+corpus = Corpus()
