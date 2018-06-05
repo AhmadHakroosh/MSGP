@@ -56,11 +56,18 @@ class Imdb:
     def __init__ (self):
         self.url = 'https://www.imdb.com/find'
         self.scripts_path = os.getcwd() + '/lib/data/movies/scripts'
+        self.jobs = {
+            'Actor': 'M',
+            'Actress': 'F'
+        }
 
     # Cast url getter
     def cast_url (self, movie_id):
         return 'https://www.imdb.com/title/{}/fullcredits'.format(movie_id)
 
+    # Actor url getter
+    def actor_url (self, actor_id):
+        return 'https://www.imdb.com/name/{}/'.format(actor_id)
 
 REDDIT = Reddit()
 IMDB = Imdb()
