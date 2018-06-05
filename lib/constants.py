@@ -69,6 +69,5 @@ class Imdb:
     def actor_url (self, actor_id):
         return 'https://www.imdb.com/name/{}/'.format(actor_id)
 
-
 REDDIT = Reddit()
 IMDB = Imdb()

@@ -1,6 +1,6 @@
 # Imports
 from bs4 import BeautifulSoup
-import os, requests, re, csv
+import os, requests, re, csv, json
 import lib.constants as APP
 # Retreive IMDB configuration - see constants.py
 CONFIG = APP.IMDB
@@ -13,7 +13,9 @@ class IMDB:
         # self.movies = self.get_movie_titles(CONFIG.scripts_path)
         # self.get_imdb_movies_id()
         # self.get_movie_cast_list()
-        self.get_character_genders()
+        # self.get_character_genders()
+        # self.parse_movie_scripts()
+        self.tsv2json()
 
     # Movie scripts scanner
     def get_movie_titles (self, path):
@@ -89,3 +91,54 @@ class IMDB:
             for character_id, character in movies_cast_list.items():
                 document.write('{}\t{}\t{}\t{}\n'.format(character_id.split('_')[1], character['movie_id'], character['character'], character['gender']))
             document.close()
+
+    # Movie scripts parser
+    def parse_movie_scripts (self):
+            print('hello')
+
+    def tsv2json (self):
+        # save the json output as emp.json 
+        jsfile = open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.json'), 'w')
+        jsfile.write('[\r\n')
+        
+        with open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.tsv'),'r') as f:
+            # next(f) # skip headings
+            reader = csv.reader(f, delimiter='\t')
+        
+            # get the total number of rows excluded the heading
+            row_count = len(list(reader))
+            ite = 0
+        
+            # back to first position
+            f.seek(0)
+            # next(f) # skip headings
+            
+            for post_id, text, gender in reader:
+                
+                # print('{}\t{}\t{}'.format(character_id, movie_id, character_name))
+
+                ite+= 1
+                
+                jsfile.write('\t{\r\n')
+                
+                n = '\t\t\"id\": \"' + post_id + '\",\r\n'
+                d = '\t\t\"text\": \"' + text + '\",\r\n'
+                i = '\t\t\"gender\": \"' + gender + '\"\r\n'
+            
+                jsfile.write(n)
+                jsfile.write(d)
+                jsfile.write(i)
+        
+                jsfile.write('\t}')
+        
+                # omit comma for last row item
+                if ite < row_count:
+                    jsfile.write(',\r')
+        
+        jsfile.write('\n]')
+        jsfile.close()
+
+        def clean_tsv (self):
+            with open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.tsv'),'r') as f:
+                for line in f.readlines():
+                    print(line)
