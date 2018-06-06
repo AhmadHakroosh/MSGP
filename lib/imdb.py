@@ -15,7 +15,8 @@ class IMDB:
         # self.get_movie_cast_list()
         # self.get_character_genders()
         # self.parse_movie_scripts()
-        self.tsv2json()
+        # self.tsv2json()
+        self.compare()
 
     # Movie scripts scanner
     def get_movie_titles (self, path):
@@ -138,7 +139,45 @@ class IMDB:
         jsfile.write('\n]')
         jsfile.close()
 
-        def clean_tsv (self):
-            with open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.tsv'),'r') as f:
-                for line in f.readlines():
-                    print(line)
+    def clean_tsv (self):
+        with open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.tsv'),'r') as f:
+            for line in f.readlines():
+                print(line)
+
+    def compare (self):
+        missing = {}
+        with_gender = {}
+        without_gender ={}
+        with open('{}/{}'.format(os.getcwd(), 'lib/data/movies/movie_characters.tsv'), 'r') as document:
+            for character_id, movie_id, character_name in csv.reader(document, delimiter = '\t'):
+                without_gender['{}_{}'.format(character_id, movie_id)] = {
+                    "character_id": character_id,
+                    "movie_id": movie_id,
+                    "character_name": character_name
+                }
+        
+        with open('{}/{}'.format(os.getcwd(), 'lib/data/movies/movie_characters_gender.tsv'), 'r') as document:
+            for character_id, movie_id, character_name, gender in csv.reader(document, delimiter = '\t'):
+                with_gender['{}_{}'.format(character_id, movie_id)] = {
+                    "character_id": character_id,
+                    "movie_id": movie_id,
+                    "character_name": character_name,
+                    "gender": gender
+                }
+
+        for character in without_gender:
+            if character not in with_gender:
+                character_obj = without_gender[character]
+                missing['{}_{}'.format(character_obj["character_id"], character_obj["movie_id"])] = {
+                    "character_id": character_obj["character_id"],
+                    "movie_id": character_obj["movie_id"],
+                    "character_name": character_obj["character_name"],
+                }
+
+        with open('{}/{}'.format(os.getcwd(), 'lib/data/movies/movie_characters_gender.tsv'), 'a') as document:
+            for character in missing:
+                obj = missing[character]
+                document.write('{}\t{}\t{}\tF\n'.format(obj["character_id"], obj["movie_id"], obj["character_name"]))
+            document.close()
+        
+        print('hello')
