@@ -16,7 +16,8 @@ class IMDB:
         # self.get_character_genders()
         # self.parse_movie_scripts()
         # self.tsv2json()
-        self.compare()
+        # self.compare()
+        self.clean_tsv()
 
     # Movie scripts scanner
     def get_movie_titles (self, path):
@@ -140,9 +141,17 @@ class IMDB:
         jsfile.close()
 
     def clean_tsv (self):
-        with open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.tsv'),'r') as f:
+        lines = []
+        with open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.tsv'), 'r') as f:
             for line in f.readlines():
-                print(line)
+                splitted = line.split('\t')
+                if line != '':
+                    lines.append('{}\t{}\t{}'.format(splitted[0], ' '.join(splitted[1:-1]).strip(), splitted[-1]))
+            f.close()
+        
+        with open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.tsv'), 'w+') as f:
+            f.writelines(lines)
+            f.close()
 
     def compare (self):
         missing = {}
