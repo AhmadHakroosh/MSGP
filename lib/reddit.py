@@ -16,7 +16,7 @@ class Reddit:
         # Find subreddit posts
         if subreddit is not None:
             # Split into steps of 100 from 0 to pre-define number of posts and search
-            for step in range(0, REDDIT.total, REDDIT.limit):
+            for _ in range(0, REDDIT.total, REDDIT.limit):
                 # Execute the request
                 results, after, _ = REDDIT.api('subreddit', subreddit, after)
                 # Iterate over found results
