@@ -15,14 +15,14 @@ class IMDB:
         # self.get_movie_cast_list()
         # self.get_character_genders()
         # self.parse_movie_scripts()
-        # self.tsv2json()
+        self.tsv2json()
         # self.compare()
-        self.clean_tsv()
+        # self.clean_tsv()
 
     # Movie scripts scanner
     def get_movie_titles (self, path):
         movies = []
-        for (dirpath, dirnames, filenames) in os.walk(path):
+        for (_, _, filenames) in os.walk(path):
             for filename in filenames:
                 movies.append(re.sub(r'[\-]+', ' ',filename.replace('.txt', '')))
             break
@@ -100,10 +100,10 @@ class IMDB:
 
     def tsv2json (self):
         # save the json output as emp.json 
-        jsfile = open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.json'), 'w')
+        jsfile = open('{}/{}'.format(os.getcwd(), 'lib/data/movies/movie_characters_gender.json'), 'w')
         jsfile.write('[\r\n')
         
-        with open('{}/{}'.format(os.getcwd(), 'lib/data/reddit/submissions.tsv'),'r') as f:
+        with open('{}/{}'.format(os.getcwd(), 'lib/data/movies/movie_characters_gender.tsv'), 'r') as f:
             # next(f) # skip headings
             reader = csv.reader(f, delimiter='\t')
         
@@ -115,7 +115,7 @@ class IMDB:
             f.seek(0)
             # next(f) # skip headings
             
-            for post_id, text, gender in reader:
+            for character_id, movie_id, character, gender in reader:
                 
                 # print('{}\t{}\t{}'.format(character_id, movie_id, character_name))
 
@@ -123,13 +123,15 @@ class IMDB:
                 
                 jsfile.write('\t{\r\n')
                 
-                n = '\t\t\"id\": \"' + post_id + '\",\r\n'
-                d = '\t\t\"text\": \"' + text + '\",\r\n'
-                i = '\t\t\"gender\": \"' + gender + '\"\r\n'
+                i = '\t\t\"id\": \"' + character_id + '\",\r\n'
+                m = '\t\t\"movie_id\": \"' + movie_id + '\",\r\n'
+                c = '\t\t\"character\": \"' + character + '\",\r\n'
+                g = '\t\t\"gender\": \"' + gender + '\"\r\n'
             
-                jsfile.write(n)
-                jsfile.write(d)
                 jsfile.write(i)
+                jsfile.write(m)
+                jsfile.write(c)
+                jsfile.write(g)
         
                 jsfile.write('\t}')
         
