@@ -20,11 +20,10 @@ with open("pym_data.txt", "r") as pym_data_f:
         if (len(parameters) == 35):
 
             word = parameters[2]
-            
-            gend2 = parameters[31]
             gend  = parameters[32]
 
-            if (re.match(num_re, gend2) and re.match(num_re, gend)):
-                new_score = (float(gend2) - float(gend))/(float(gend2) + float(gend))
+            if (re.match(num_re, gend)):
+
+                new_score = (float(gend) - 4.05)/4.05;
                 print(word + "," + str(new_score))
         
