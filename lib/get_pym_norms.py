@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 '''
-Convert Gend(masculine) and Gend2(feminine) scores 
+Convert Gend scores 
 from the PYM dataset to values between -1(most masculine)
 and +1 (most feminine)
 '''
