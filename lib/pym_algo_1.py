@@ -7,7 +7,7 @@ by averaging the PYM score of all known words in
 the sentence
 '''
 
-class PYM_Score:
+class PYMScore:
     '''Compute the PYM score of a sentence'''
     def __init__(self):
         '''Initialize the scores from the data file pym_data.csv'''
